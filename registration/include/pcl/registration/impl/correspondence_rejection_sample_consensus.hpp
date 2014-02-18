@@ -124,11 +124,16 @@ pcl::registration::CorrespondenceRejectorSampleConsensus<PointT>::getRemainingCo
      // Pass the target_indices
      model->setInputTarget (target_, target_indices);
      // Create a RANSAC model
-     pcl::MEstimatorSampleConsensus<PointT> sac (model, inlier_threshold_);
-     sac.setMaxIterations (max_iterations_);
+     if (!sample_consensus_) {
+       sample_consensus_.reset (new pcl::MEstimatorSampleConsensus<PointT> (model, inlier_threshold_)); 
+     } else {
+       sample_consensus_->setSampleConsensusModel (model);
+       sample_consensus_->setDistanceThreshold (inlier_threshold_);
+     }
+     sample_consensus_->setMaxIterations (max_iterations_);
 
      // Compute the set of inliers
-     if (!sac.computeModel ())
+     if (!sample_consensus_->computeModel ())
      {
        remaining_correspondences = original_correspondences;
        best_transformation_.setIdentity ();
@@ -136,14 +141,14 @@ pcl::registration::CorrespondenceRejectorSampleConsensus<PointT>::getRemainingCo
      }
      else
      {
-       if (refine_ && !sac.refineModel ())
+       if (refine_ && !sample_consensus_->refineModel ())
        {
          PCL_ERROR ("[pcl::registration::CorrespondenceRejectorSampleConsensus::getRemainingCorrespondences] Could not refine the model! Returning an empty solution.\n");
          return;
        }
        
        std::vector<int> inliers;
-       sac.getInliers (inliers);
+       sample_consensus_->getInliers (inliers);
 
        if (inliers.size () < 3)
        {
@@ -168,7 +173,7 @@ pcl::registration::CorrespondenceRejectorSampleConsensus<PointT>::getRemainingCo
 
        // get best transformation
        Eigen::VectorXf model_coefficients;
-       sac.getModelCoefficients (model_coefficients);
+       sample_consensus_->getModelCoefficients (model_coefficients);
        best_transformation_.row (0) = model_coefficients.segment<4>(0);
        best_transformation_.row (1) = model_coefficients.segment<4>(4);
        best_transformation_.row (2) = model_coefficients.segment<4>(8);

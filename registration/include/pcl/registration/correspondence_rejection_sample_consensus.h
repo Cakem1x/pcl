@@ -61,6 +61,7 @@ namespace pcl
       typedef pcl::PointCloud<PointT> PointCloud;
       typedef typename PointCloud::Ptr PointCloudPtr;
       typedef typename PointCloud::ConstPtr PointCloudConstPtr;
+      typedef typename pcl::SampleConsensus<PointT>::Ptr SampleConsensusPtr;
 
       public:
         using CorrespondenceRejector::input_correspondences_;
@@ -232,6 +233,12 @@ namespace pcl
         inline void
         setSaveInliers (bool s) { save_inliers_ = s; }
 
+        /** \brief Set the sample consensus object to be used to reject outliers.
+          * \param[in] sample_consensus The sample consensus object to be used to reject outliers.
+          */
+        inline void
+        setSampleConsensus (SampleConsensusPtr sample_consensus) { sample_consensus_ = sample_consensus; }
+
         /** \brief Get whether the rejector is configured to save inliers */
         inline bool
         getSaveInliers () { return save_inliers_; }
@@ -255,6 +262,7 @@ namespace pcl
         PointCloudConstPtr input_;
         PointCloudPtr input_transformed_;
         PointCloudConstPtr target_;
+        SampleConsensusPtr sample_consensus_;
 
         Eigen::Matrix4f best_transformation_;
 
