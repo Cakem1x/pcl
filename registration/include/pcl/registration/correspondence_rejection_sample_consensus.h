@@ -42,7 +42,7 @@
 
 #include <pcl/registration/correspondence_rejection.h>
 
-#include <pcl/sample_consensus/ransac.h>
+#include <pcl/sample_consensus/msac.h>
 #include <pcl/sample_consensus/sac_model_registration.h>
 #include <pcl/common/transforms.h>
 

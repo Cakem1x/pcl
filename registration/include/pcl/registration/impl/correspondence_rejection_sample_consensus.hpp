@@ -121,7 +121,7 @@ pcl::registration::CorrespondenceRejectorSampleConsensus<PointT>::getRemainingCo
      // Pass the target_indices
      model->setInputTarget (target_, target_indices);
      // Create a RANSAC model
-     pcl::RandomSampleConsensus<PointT> sac (model, inlier_threshold_);
+     pcl::MEstimatorSampleConsensus<PointT> sac (model, inlier_threshold_);
      sac.setMaxIterations (max_iterations_);
 
      // Compute the set of inliers
